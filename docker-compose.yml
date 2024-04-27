@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  redis1:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  redis2:
+    image: redis:latest
+    ports:
+      - "6380:6379"
+
+  redis3:
+    image: redis:latest
+    ports:
+      - "6381:6379"
+
+  redis4:
+    image: redis:latest
+    ports:
+      - "6382:6379"
+
+  server1:
+    image: golang:1.21.0
+    volumes:
+      - .:/go/src/app
+    working_dir: /go/src/app
+    command: sh -c 'go run main.go'
+    environment:
+      - REDIS_HOSTS=redis1:6379,redis2:6379,redis3:6379,redis4:6379
+      - CONSUMER_ID=1
+    depends_on:
+      - redis1
+      - redis2
+      - redis3
+      - redis4
+
+  server2:
+    image: golang:1.21.0
+    volumes:
+      - .:/go/src/app
+    working_dir: /go/src/app
+    command: sh -c 'go run main.go'
+    environment:
+      - REDIS_HOSTS=redis1:6379,redis2:6379,redis3:6379,redis4:6379
+      - CONSUMER_ID=2
+    depends_on:
+      - redis1
+      - redis2
+      - redis3
+      - redis4
